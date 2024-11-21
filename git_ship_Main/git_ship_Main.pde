@@ -41,7 +41,7 @@ boolean atWarp;
 boolean showDialogue;
 
 Star[] stars = new Star[400];
-SpaceStation alpha;
+Planet[] planets;
 Person person;
 Checksum healthbar;
 Junk junk;
@@ -70,7 +70,10 @@ void draw(){
      stars[i].display();
     }
     //location
-     alpha.display();
+    for(Planet planet : planets){
+      planet.update();
+      planet.display();
+    }
   
     //viewscreen
     if(showDialogue){
@@ -109,20 +112,16 @@ void init(){
     println(item);
   }
   //location
-  char[] bin = binary(healthbar.checksum).toCharArray();
-  bin[bin.length-4] = '1';
-  bin[bin.length-8] = '1';
-  
-  //Space Station Alpha
-  alpha = new SpaceStation();
-  bin[bin.length-8] = '0';
-  //Space Station Alpha
-  
-  healthbar.checksum = unbinary(new String(bin));
-  
-  earth = new Planet(2*width/3, height/4, 50);
+  //150 to 450, 100 to 200, 50 to 375, 0 to 50
+  planets = new Planet[3];
+  planets[2] = new Planet(0.15*width, 0.3*height, 25, 30, 5, 48);
+  planets[1] = new Planet(0.25*width, 0.2 * height, 20, 23, 4, 1);
+  planets[0] = new Planet(0.9*width, 0.7*height, 180, 50, 50, 5);
   //dialogue
   person = new Person();
+  char[] q = binary(healthbar.checksum).toCharArray();
+  q[q.length - 7] = '1';
+  healthbar.checksum = unbinary(new String(q));
   //junk
   junk = new Junk();
   
@@ -131,11 +130,12 @@ void init(){
 
 void dropOutOfWarp(){
   speed = 0.00;
-  float rndX = 298;
-  float rndY = 149;
+  float rndX = 322; // 150 to 450
+  float rndY = 120; // 100, 200
   x = map(rndX, 0.25*width, 0.75*width, 0, 10);
   y = map(rndY, 0.25*height, 0.5*height, 0, 10);
-  location = "Trafalgar Stn";
+  planets[0].sliders();
+  location = "Many Moons";
 }
 
 void noSignal(){
